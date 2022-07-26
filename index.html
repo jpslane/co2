@@ -4,58 +4,48 @@
   </svg>
   <div id="my_dataviz"></div>
   <body onload='init()'>
- <script>
-async function init() {
+  <script>
+    async function init() {
 // set the dimensions and margins of the graph
-var margin = {top: 10, right: 30, bottom: 30, left: 100},
-    width = 1000 - margin.left - margin.right,
-    height = 700 - margin.top - margin.bottom;
+      var margin = {top: 10, right: 30, bottom: 30, left: 100},
+        width = 1000 - margin.left - margin.right,
+        height = 700 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
-  .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-
-//Read the data
-const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-visualization/main/emissions.csv');
-
-  // When reading the csv, I must format variables:
-
-  // Now I can use this dataset:
-
-    // Add X axis --> it is a date format
-
-
-    // Add Y axis
-    var y = d3.scaleLinear()
-      .domain([0, d3.max(data, function(d) { return +d.       value; })])
-      .range([ height, 0 ]);
-    svg.append("g")
-      .attr('transform', 'translate('+margin+','+margin       +')')
-      .call(d3.axisLeft(y));
+      var svg = d3.select("#my_dataviz")
+        .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform","translate(" + margin.left + "," + margin.top + ")");
       
-    var x = d3.scaleLinear()
-      .domain([1750, 2030])
-      .range([0, height]);
-    svg.append("g")
-      .attr('transform', 'translate('+margin+','+(height +       margin)+')')
-      .call(d3.axisBottom(x));
+      const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-visualization/main/emissions.csv');
+      var y = d3.scaleLinear()
+        .domain([0, d3.max(data, function(d) { return +d.value;})])
+        .range([height, 0]);
+      
+      svg.append("g")
+        .attr('transform', 'translate('+margin+','+margin+')')
+        .call(d3.axisLeft(y));
+      
+      var x = d3.scaleLinear()
+        .domain([1750, 2030])
+        .range([0, height]);
+      
+      svg.append("g")
+        .attr('transform', 'translate('+margin+','+(height +       margin)+')')
+        .call(d3.axisBottom(x));
 
     // Add the line
-    svg.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 1.5)
-      .attr("d", d3.line()
-        .x(function(d) { return x(d.year) })
-        .y(function(d) { return y(d.value) })
-        )
-}
-</script>
-</body>
+      svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d) { return x(d.year) })
+          .y(function(d) { return y(d.value) }))
+    }
+  </script>
+  </body>
 </html>
