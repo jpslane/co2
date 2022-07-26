@@ -1,32 +1,59 @@
 <html>
   <script src='https://d3js.org/d3.v5.min.js'></script>
-  <body onload='init()'>
   <svg width=300 height=300>
   </svg>
-  <script>
-  async function init() {
-    const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-visualization/main/emissions.csv', d3.autoType);
-    
-    var x = d3.scaleLinear()
-    .domain([1750, 2020])
-    .range([0, 200]);
-    
+  <div id="my_dataviz"></div>
+  <body onload='init()'>
+ <script>
+async function init() {
+// set the dimensions and margins of the graph
+var margin = {top: 10, right: 30, bottom: 30, left: 60},
+    width = 500 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+//Read the data
+const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-visualization/main/emissions.csv');
+
+  // When reading the csv, I must format variables:
+
+  // Now I can use this dataset:
+
+    // Add X axis --> it is a date format
+
+
+    // Add Y axis
     var y = d3.scaleLinear()
-    .domain([0, 40000000000])
-    .range([200, 0]);
-    
-    var margin = 50
-    var svg = d3.select('svg').append('g').attr('transform', 'translate('+margin+','+margin+')');
-    
-    svg.append('path')
-    .datum(data)
-    .attr('fill', 'none')
-    .attr("stroke", "steelblue")
-    .attr("stroke-width", 1.5)
-    .attr("d", d3.line()
-      .x(function(d) { return x(d.date) })
-      .y(function(d) { return y(d.value) }))
-  }
-  </script>
-  </body>
+      .domain([0, d3.max(data, function(d) { return +d.value; })])
+      .range([ height, 0 ]);
+    svg.append("g")
+      .call(d3.axisLeft(y));
+      
+    var x = d3.scaleLinear()
+      .domain([1750, 2020])
+      .range([ 0, height ]);
+    svg.append("g")
+      .call(d3.axisBottom(x));
+
+    // Add the line
+    svg.append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("d", d3.line()
+        .x(function(d) { return x(d.year) })
+        .y(function(d) { return y(d.value) })
+        )
+}
+</script>
+</body>
 </html>
