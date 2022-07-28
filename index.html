@@ -20,15 +20,8 @@ var svg = d3.select("#my_dataviz")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
 
-//Read the data
 const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-visualization/main/emissions.csv');
-
-  // When reading the csv, I must format variables:
-
-  // Now I can use this dataset:
-
-    // Add X axis --> it is a date format
-
+  
     var x = d3.scaleLinear()
       .domain([1750, 2030])
       .range([0, height]);
@@ -36,17 +29,13 @@ const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-v
       .attr('transform', 'translate('+0+','+(height + margin.top)+')')
       .call(d3.axisBottom(x));
       
-    // Add Y axis
     var y = d3.scaleLinear()
       .domain([0, d3.max(data, function(d) { return +d.       value; })])
       .range([ height, 0 ]);
     svg.append("g")
       .attr('transform', 'translate('+0+','+margin.top       +')')
       .call(d3.axisLeft(y));
-      
 
-
-    // Add the line
     svg.append("path")
       .datum(data)
       .attr("fill", "none")
