@@ -37,6 +37,23 @@ const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-v
       .attr('transform', 'translate('+0+','+margin.top       +')')
       .call(d3.axisLeft(y));
 
+    var bisect = d3.bisector(function(d) {return d.year;}).left;
+    
+    var focus = svg
+    	.append('g')
+      .append('circle')
+      	.style('fill', 'none')
+        .attr('stroke', 'black')
+        .attr('r', 3)
+        .style('opacity', 0)
+        
+    var focusText = svg
+    	.append('g')
+      .append('text')
+      	.style('opacity', 0)
+        .attr('text-anchor', 'left')
+        .attr('alignment-baseline', 'middle')
+        
     svg.append("path")
       .datum(data)
       .attr("fill", "none")
@@ -46,6 +63,38 @@ const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-v
         .x(function(d) { return x(d.year) })
         .y(function(d) { return y(d.value) })
         )
+     
+     svg.append('rect')
+       .style('fill', 'none')
+       .style('pointer-events', 'all')
+       .attr('width', width)
+       .attr('height', height)
+       .on('mouseover', mouseover)
+       .on('mousemove', mousemove)
+       .on('mouseout', mouseout);
+       
+     function mouseover() {
+       focus.style('opacity', 1)
+       focusText.style('opacity', 1)
+     }
+     
+     function mousemove() {
+       var x0 = x.invert(d3.mouse(this)[0]);
+       var i = bisect(data, x0, 1);
+       selectedData = data[i]
+       focus
+         .attr('cx', x(selectedData.year))
+         .attr('cy', y(selectedData.value))
+       focusText
+         .html('Year: ' + selectedData.year + ', ' + 'CO2: ' + selectedData.value)
+         .attr('x', x(selectedData.year)+15)
+         .attr('y', y(selectedData.value))
+     }
+     
+     function mouseout() {
+       focus.style('opacity', 0)
+       focusText.style('opacity', 0)
+     }
      
      svg.append("text")
     .attr("class", "x label")
@@ -61,6 +110,8 @@ const data = await d3.csv('https://raw.githubusercontent.com/jpslane/narrative-v
     .attr("dy", ".75em")
     .attr("transform", "rotate(-90)")
     .text("co2 emissions");
+    
+    
 }
 
 </script>
